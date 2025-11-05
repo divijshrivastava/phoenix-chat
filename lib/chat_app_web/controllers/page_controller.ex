@@ -13,6 +13,7 @@ defmodule ChatAppWeb.PageController do
       render(conn, :home, username: username, room_id: room_id)
     else
       conn
+      |> put_session(:return_to, "/room/#{room_id}")
       |> put_flash(:info, "Please sign in to join the chat room.")
       |> redirect(to: ~p"/")
     end
@@ -32,10 +33,13 @@ defmodule ChatAppWeb.PageController do
   end
 
   def sign_in(conn, %{"username" => username}) do
+    return_to = get_session(conn, :return_to) || ~p"/"
+
     conn
     |> put_session(:username, username)
+    |> delete_session(:return_to)
     |> put_flash(:info, "Welcome, #{username}!")
-    |> redirect(to: ~p"/")
+    |> redirect(to: return_to)
   end
 
   def sign_out(conn, _params) do
