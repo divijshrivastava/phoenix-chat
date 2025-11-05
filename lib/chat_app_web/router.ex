@@ -18,10 +18,18 @@ defmodule ChatAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    post "/sign_in", PageController, :sign_in
-    get "/sign_out", PageController, :sign_out
     get "/create_room", PageController, :create_room
     get "/room/:id", PageController, :room
+  end
+
+  # OAuth authentication routes
+  scope "/auth", ChatAppWeb do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+    post "/:provider/callback", AuthController, :callback
+    get "/sign_out", AuthController, :sign_out
   end
 
   # Other scopes may use custom stacks.

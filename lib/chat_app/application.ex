@@ -12,6 +12,7 @@ defmodule ChatApp.Application do
 
     children = [
       ChatAppWeb.Telemetry,
+      ChatApp.Repo,
       {DNSCluster, query: Application.get_env(:chat_app, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ChatApp.PubSub},
       # Start a worker by calling: ChatApp.Worker.start_link(arg)

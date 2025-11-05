@@ -31,21 +31,4 @@ defmodule ChatAppWeb.PageController do
       |> redirect(to: ~p"/")
     end
   end
-
-  def sign_in(conn, %{"username" => username}) do
-    return_to = get_session(conn, :return_to) || ~p"/"
-
-    conn
-    |> put_session(:username, username)
-    |> delete_session(:return_to)
-    |> put_flash(:info, "Welcome, #{username}!")
-    |> redirect(to: return_to)
-  end
-
-  def sign_out(conn, _params) do
-    conn
-    |> clear_session()
-    |> put_flash(:info, "You have been signed out.")
-    |> redirect(to: ~p"/")
-  end
 end
