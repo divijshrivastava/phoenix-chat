@@ -15,13 +15,17 @@ You need to add your Fly.io deploy token as a GitHub secret:
 3. In the left sidebar, click **Secrets and variables** → **Actions**
 4. Click **New repository secret**
 5. Name: `FLY_API_TOKEN`
-6. Value: Copy the token below (save this somewhere secure):
+6. Value: Generate a new token by running the following command locally:
 
-```
-FLY_API_TOKEN=FlyV1 fm2_lJPECAAAAAAACtTQxBAAUNJnlQEofEv2LLZSuzCmwrVodHRwczovL2FwaS5mbHkuaW8vdjGWAJLOABRXbh8Lk7lodHRwczovL2FwaS5mbHkuaW8vYWFhL3YxxDzXbaFYJ0hXLcCSaseH81s+XzbHRBiG2a2mfamMd+JDFnllxL4b6aFgNeEbETXeBRMi59tabmyP+axcBuXETiTDJZRHKpOLv30e/WXtCaHQ/8lpDqjRTKLznymuy0BlCBkpSew/+q6eA7+tzkJ8AvZ1TIAxTqKQF+mpx1Aw/E3kO5EhbgUtpR2i2A4szw2SlAORgc4ArFknHwWRgqdidWlsZGVyH6J3Zx8BxCCrFZ8WpgBvPgXiwOlD5DzftHwY+s7Q57/eD5RR85Ia8Q==,fm2_lJPETiTDJZRHKpOLv30e/WXtCaHQ/8lpDqjRTKLznymuy0BlCBkpSew/+q6eA7+tzkJ8AvZ1TIAxTqKQF+mpx1Aw/E3kO5EhbgUtpR2i2A4sz8QQSf6w/QTIe3UOpVC0+ieBOsO5aHR0cHM6Ly9hcGkuZmx5LmlvL2FhYS92MZgEks5pCzStzwAAAAE/nsq7F84AE4n9CpHOABOJ/QzEEKhmv+xlvj66BXFpUKJEdP3EIGz7IDxMxz1PtR+6SoUVHvvv0PhgW7NPIN5DTlPm/1nV
-```
+   ```bash
+   flyctl tokens create deploy -x 999999h
+   ```
+
+   Copy the output token (it will start with `FlyV1`) and paste it as the secret value.
 
 7. Click **Add secret**
+
+**Important:** Never commit tokens to your repository! Keep them secure in GitHub Secrets only.
 
 #### 2. How It Works
 
