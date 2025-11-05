@@ -1,0 +1,141 @@
+<div class="min-h-screen bg-base-100 flex flex-col">
+  <%= if @username do %>
+    <!-- Chat Interface for signed-in users -->
+    <div class="flex flex-col h-screen">
+      <!-- Mobile-optimized header -->
+      <div class="bg-base-200 shadow-lg p-3 sm:p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-xl sm:text-2xl font-bold truncate">Phoenix Chat</h1>
+            <%= if @room_id do %>
+              <p class="text-xs text-base-content/60 truncate">
+                Room: <code class="bg-base-300 px-1.5 py-0.5 rounded text-xs"><%= @room_id %></code>
+              </p>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-2 ml-2">
+            <span class="hidden sm:inline text-sm">
+              <strong class="text-primary"><%= @username %></strong>
+            </span>
+            <a href="/sign_out" class="btn btn-xs sm:btn-sm btn-outline">Sign Out</a>
+          </div>
+        </div>
+      </div>
+
+      <%= if @room_id do %>
+        <!-- Room-specific actions - mobile optimized -->
+        <div class="bg-base-200 border-b border-base-300 p-2 sm:p-3">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold mb-1">Share room:</p>
+              <div class="flex gap-1.5">
+                <input
+                  type="text"
+                  readonly
+                  value={"#{ChatAppWeb.Endpoint.url()}/room/#{@room_id}"}
+                  id="room-url"
+                  class="input input-xs sm:input-sm input-bordered flex-1 font-mono text-xs"
+                />
+                <button
+                  onclick="navigator.clipboard.writeText(document.getElementById('room-url').value); this.textContent='✓'; setTimeout(() => this.textContent='Copy', 2000)"
+                  class="btn btn-xs sm:btn-sm btn-primary whitespace-nowrap"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+            <a href="/" class="btn btn-xs sm:btn-sm btn-outline whitespace-nowrap">Leave</a>
+          </div>
+        </div>
+
+        <!-- Messages Container - mobile optimized full height -->
+        <div class="flex-1 overflow-y-auto p-2 sm:p-4" id="messages">
+          <p class="text-base-content/60 text-sm">Loading messages...</p>
+        </div>
+
+        <!-- Message Input - fixed at bottom on mobile -->
+        <div class="bg-base-200 border-t border-base-300 p-2 sm:p-3">
+          <div class="flex gap-2">
+            <input type="hidden" id="username" value={@username} />
+            <input type="hidden" id="room-id" value={@room_id} />
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Type message..."
+              class="input input-sm sm:input-md input-bordered flex-1"
+            />
+            <button id="send-button" class="btn btn-sm sm:btn-md btn-primary">Send</button>
+          </div>
+        </div>
+      <% else %>
+        <!-- Lobby - No room selected - mobile first -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div class="max-w-2xl mx-auto space-y-4">
+            <div class="card bg-base-200 shadow-xl">
+              <div class="card-body items-center text-center p-4 sm:p-8">
+                <h2 class="card-title text-xl sm:text-2xl mb-2 sm:mb-4">Create New Room</h2>
+                <p class="mb-4 sm:mb-6 text-sm sm:text-base text-base-content/70">
+                  Start a new chat room and share the link with others
+                </p>
+                <a href="/create_room" class="btn btn-primary w-full sm:w-auto sm:btn-wide">
+                  Create Room
+                </a>
+              </div>
+            </div>
+
+            <div class="card bg-base-200 shadow-xl">
+              <div class="card-body items-center text-center p-4 sm:p-8">
+                <h2 class="card-title text-xl sm:text-2xl mb-2 sm:mb-4">Join Existing Room</h2>
+                <p class="mb-4 sm:mb-6 text-sm sm:text-base text-base-content/70">
+                  Have a room link? Click it to join the conversation
+                </p>
+                <div class="text-xs sm:text-sm text-base-content/60">
+                  Room links look like:<br/>
+                  <code class="bg-base-300 px-2 py-1 rounded text-xs mt-2 inline-block">
+                    /room/abc123
+                  </code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- Sign-in Form for non-authenticated users - mobile first -->
+    <div class="flex-1 flex items-center justify-center p-4">
+      <div class="w-full max-w-md">
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body p-6 sm:p-8">
+            <h2 class="card-title text-2xl sm:text-3xl mb-2 sm:mb-4 text-center justify-center">
+              Welcome to Phoenix Chat
+            </h2>
+            <p class="text-center mb-4 sm:mb-6 text-sm sm:text-base text-base-content/70">
+              Enter your name to join the conversation
+            </p>
+
+            <.form for={%{}} action="/sign_in" method="post" class="space-y-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text text-sm sm:text-base">Username</span>
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Enter your name"
+                  class="input input-bordered w-full"
+                  required
+                  minlength="2"
+                  maxlength="20"
+                  autofocus
+                />
+              </div>
+
+              <button type="submit" class="btn btn-primary w-full">Join Chat</button>
+            </.form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
