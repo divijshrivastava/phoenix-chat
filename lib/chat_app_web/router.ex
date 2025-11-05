@@ -26,10 +26,10 @@ defmodule ChatAppWeb.Router do
   scope "/auth", ChatAppWeb do
     pipe_through :browser
 
+    get "/sign_out", AuthController, :sign_out
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/:provider/callback", AuthController, :callback
-    get "/sign_out", AuthController, :sign_out
   end
 
   # Other scopes may use custom stacks.
