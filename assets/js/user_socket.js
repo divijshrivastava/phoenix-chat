@@ -21,6 +21,8 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     if (message !== "") {
       channel.push("new_message", {body: message})
       messageInput.value = ""
+      // Blur the input to prevent mobile zoom after sending
+      messageInput.blur()
     }
   }
 
