@@ -27,8 +27,17 @@ defmodule ChatAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/profile", PageController, :profile
+    get "/user/:id", PageController, :public_profile
     get "/create_room", PageController, :create_room
+    post "/create_room", PageController, :create_room_post
     get "/room/:id", PageController, :room
+    get "/room/:id/members", RoomController, :members
+    get "/room/:id/manage", RoomController, :manage
+    post "/room/:id/rename", RoomController, :rename
+    post "/room/:id/approve", RoomController, :approve_user
+    post "/room/:id/ban", RoomController, :ban_user
+    post "/room/:id/unban", RoomController, :unban_user
   end
 
   # OAuth authentication routes

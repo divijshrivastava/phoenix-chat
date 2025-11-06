@@ -53,7 +53,7 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     removeNoMessagesMessage()
 
     const messageElement = document.createElement("div")
-    messageElement.className = "mb-2 p-2 bg-base-300 rounded"
+    messageElement.className = "mb-2 p-3 message-bubble rounded-lg fade-in"
 
     // Format timestamp if present
     let timeStr = ""
@@ -62,8 +62,16 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
       timeStr = `<span class="text-xs text-base-content/50 ml-2">${date.toLocaleTimeString()}</span>`
     }
 
+    // Make username clickable if user_id is available
+    let usernameHtml = ""
+    if (msg.user_id) {
+      usernameHtml = `<a href="/user/${msg.user_id}" class="font-bold text-primary hover:underline">${escapeHtml(msg.username)}</a>:`
+    } else {
+      usernameHtml = `<span class="font-bold text-primary">${escapeHtml(msg.username)}:</span>`
+    }
+
     messageElement.innerHTML = `
-      <span class="font-bold text-primary">${escapeHtml(msg.username)}:</span>
+      ${usernameHtml}
       <span class="ml-2">${escapeHtml(msg.body)}</span>
       ${timeStr}
     `
@@ -72,8 +80,25 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight
   }
 
+  // Display join notification
+  function displayJoinNotification(username) {
+    const notificationElement = document.createElement("div")
+    notificationElement.className = "mb-2 p-2 glass-panel rounded-lg text-center fade-in"
+    notificationElement.innerHTML = `
+      <span class="text-sm neon-cyan italic">✨ ${escapeHtml(username)} has joined the room</span>
+    `
+    messagesContainer.appendChild(notificationElement)
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+  }
+
   channel.on("new_message", msg => {
     displayMessage(msg)
+  })
+
+  // Reload members when someone joins
+  channel.on("user_joined", msg => {
+    displayJoinNotification(msg.username)
+    loadMembers()
   })
 
   channel.join()
@@ -98,11 +123,57 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
         welcomeMsg.textContent = "No messages yet. Start the conversation!"
         messagesContainer.appendChild(welcomeMsg)
       }
+
+      // Load and update member count
+      loadMembers()
     })
     .receive("error", resp => {
       console.log("Unable to join", resp)
       messagesContainer.innerHTML = '<p class="text-error">Unable to join room. Please try again.</p>'
     })
+
+  // Function to load and display members
+  function loadMembers() {
+    fetch(`/room/${roomId}/members`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.members) {
+          updateMembersList(data.members)
+          updateMembersCount(data.members.length)
+        }
+      })
+      .catch(error => {
+        console.error('Error loading members:', error)
+      })
+  }
+
+  function updateMembersList(members) {
+    const membersList = document.getElementById('members-list')
+    if (membersList) {
+      if (members.length === 0) {
+        membersList.innerHTML = '<p class="text-base-content/60 text-sm">No members yet.</p>'
+      } else {
+        membersList.innerHTML = members.map(member => {
+          const roleColor = member.role === 'admin' ? 'badge-primary' :
+                           member.role === 'editor' ? 'badge-secondary' :
+                           'badge-ghost'
+          return `
+            <div class="flex items-center justify-between p-3 glass-panel rounded-lg cyber-hover">
+              <a href="/user/${member.id}" class="font-medium truncate neon-cyan hover:underline">${escapeHtml(member.name)}</a>
+              <span class="badge ${roleColor} badge-sm">${escapeHtml(member.role)}</span>
+            </div>
+          `
+        }).join('')
+      }
+    }
+  }
+
+  function updateMembersCount(count) {
+    const membersCount = document.getElementById('members-count')
+    if (membersCount) {
+      membersCount.textContent = count
+    }
+  }
 }
 
 function escapeHtml(text) {

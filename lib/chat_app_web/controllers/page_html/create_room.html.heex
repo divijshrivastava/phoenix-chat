@@ -1,0 +1,76 @@
+<div class="min-h-screen gradient-bg flex flex-col scan-lines">
+  <div class="flex flex-col h-screen">
+    <!-- Header -->
+    <div class="glass-panel p-3 sm:p-4 backdrop-blur-xl">
+      <div class="flex items-center justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-xl sm:text-2xl font-bold truncate neon-cyan">🚀 Create New Room</h1>
+        </div>
+        <div class="flex items-center gap-2 ml-2">
+          <a href="/" class="btn btn-xs sm:btn-sm btn-outline">Home</a>
+          <a href="/auth/sign_out" class="btn btn-xs sm:btn-sm btn-outline">Sign Out</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Room Form -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+      <div class="max-w-md mx-auto fade-in">
+        <div class="glass-card cyber-hover rounded-2xl">
+          <div class="card-body p-4 sm:p-6 md:p-8">
+            <h2 class="card-title text-lg sm:text-xl md:text-2xl mb-4 neon-magenta">✨ Create a New Chat Room</h2>
+            <p class="text-sm sm:text-base text-base-content/70 mb-6">
+              Create a new chat room and invite others to join. You'll be the admin of the room.
+            </p>
+
+            <.form for={to_form(%{}, as: :room)} action={~p"/create_room"} method="post" id="create-room-form" class="space-y-4">
+              <div>
+                <label for="room_name" class="block text-sm font-medium mb-2">
+                  Room Name <span class="text-xs text-base-content/50">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  name="room[name]"
+                  id="room_name"
+                  placeholder="Enter room name..."
+                  class="input input-bordered w-full input-md sm:input-lg"
+                  maxlength="100"
+                />
+                <p class="text-xs text-base-content/50 mt-1">
+                  Leave empty to use the room ID as the name
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-2">Room Privacy</label>
+                <div class="form-control">
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input
+                      type="checkbox"
+                      name="room[is_private]"
+                      id="room_is_private"
+                      value="true"
+                      class="checkbox checkbox-primary"
+                    />
+                    <div>
+                      <span class="label-text font-medium">Private Room</span>
+                      <p class="text-xs text-base-content/50 mt-0.5">
+                        Admin must approve new members before they can join
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-4">
+                <a href="/" class="btn btn-outline flex-1">Cancel</a>
+                <button type="submit" class="btn btn-primary flex-1 pulse-glow">🚀 Create Room</button>
+              </div>
+            </.form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -23,42 +23,42 @@
   on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
 @plugin "../vendor/daisyui-theme" {
   name: "dark";
-  default: false;
+  default: true;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(30.33% 0.016 252.42);
-  --color-base-200: oklch(25.26% 0.014 253.1);
-  --color-base-300: oklch(20.15% 0.012 254.09);
-  --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(58% 0.233 277.117);
-  --color-primary-content: oklch(96% 0.018 272.314);
-  --color-secondary: oklch(58% 0.233 277.117);
-  --color-secondary-content: oklch(96% 0.018 272.314);
-  --color-accent: oklch(60% 0.25 292.717);
-  --color-accent-content: oklch(96% 0.016 293.756);
-  --color-neutral: oklch(37% 0.044 257.287);
-  --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: oklch(58% 0.158 241.966);
-  --color-info-content: oklch(97% 0.013 236.62);
-  --color-success: oklch(60% 0.118 184.704);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
-  --color-error: oklch(58% 0.253 17.585);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
+  --color-base-100: oklch(12% 0.03 264);
+  --color-base-200: oklch(10% 0.028 266);
+  --color-base-300: oklch(8% 0.025 268);
+  --color-base-content: oklch(95% 0.02 264);
+  --color-primary: oklch(65% 0.28 195);
+  --color-primary-content: oklch(98% 0.01 195);
+  --color-secondary: oklch(68% 0.25 320);
+  --color-secondary-content: oklch(98% 0.01 320);
+  --color-accent: oklch(70% 0.27 285);
+  --color-accent-content: oklch(98% 0.01 285);
+  --color-neutral: oklch(18% 0.03 264);
+  --color-neutral-content: oklch(95% 0.02 264);
+  --color-info: oklch(60% 0.22 230);
+  --color-info-content: oklch(98% 0.01 230);
+  --color-success: oklch(65% 0.20 160);
+  --color-success-content: oklch(98% 0.01 160);
+  --color-warning: oklch(70% 0.24 80);
+  --color-warning-content: oklch(15% 0.03 80);
+  --color-error: oklch(60% 0.26 25);
+  --color-error-content: oklch(98% 0.01 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
   --size-selector: 0.21875rem;
   --size-field: 0.21875rem;
-  --border: 1.5px;
+  --border: 1px;
   --depth: 1;
   --noise: 0;
 }
 
 @plugin "../vendor/daisyui-theme" {
   name: "light";
-  default: true;
+  default: false;
   prefersdark: false;
   color-scheme: "light";
   --color-base-100: oklch(98% 0 0);
@@ -103,3 +103,333 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Futuristic Styles */
+@layer utilities {
+  /* Animated gradient background */
+  .gradient-bg {
+    background: linear-gradient(135deg,
+      oklch(12% 0.04 264) 0%,
+      oklch(15% 0.05 280) 25%,
+      oklch(12% 0.04 250) 50%,
+      oklch(14% 0.045 270) 75%,
+      oklch(12% 0.04 264) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Glassmorphism effect */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 20px rgba(100, 220, 255, 0.05);
+    position: relative;
+  }
+
+  /* Ensure glass elements don't block interactions */
+  .glass-panel > *,
+  .glass-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Neon glow effects */
+  .neon-cyan {
+    color: oklch(80% 0.25 195);
+    text-shadow:
+      0 0 5px rgba(0, 255, 255, 0.5),
+      0 0 10px rgba(0, 255, 255, 0.3),
+      0 0 20px rgba(0, 255, 255, 0.2);
+  }
+
+  .neon-magenta {
+    color: oklch(75% 0.28 320);
+    text-shadow:
+      0 0 5px rgba(255, 0, 255, 0.5),
+      0 0 10px rgba(255, 0, 255, 0.3),
+      0 0 20px rgba(255, 0, 255, 0.2);
+  }
+
+  .neon-border-cyan {
+    border: 1px solid oklch(70% 0.25 195);
+    box-shadow:
+      0 0 5px rgba(0, 255, 255, 0.3),
+      0 0 10px rgba(0, 255, 255, 0.2),
+      inset 0 0 10px rgba(0, 255, 255, 0.05);
+  }
+
+  .neon-border-magenta {
+    border: 1px solid oklch(70% 0.28 320);
+    box-shadow:
+      0 0 5px rgba(255, 0, 255, 0.3),
+      0 0 10px rgba(255, 0, 255, 0.2),
+      inset 0 0 10px rgba(255, 0, 255, 0.05);
+  }
+
+  /* Hover effects */
+  .cyber-hover {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cyber-hover:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(100, 220, 255, 0.3);
+    }
+  }
+
+  .cyber-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+      oklch(65% 0.28 195),
+      oklch(68% 0.25 320)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cyber-hover:hover::before {
+      opacity: 1;
+    }
+  }
+
+  /* Message bubble styles */
+  .message-bubble {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    border-left: 2px solid oklch(65% 0.28 195);
+    transition: all 0.2s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .message-bubble:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-left-color: oklch(70% 0.28 195);
+      transform: translateX(4px);
+    }
+  }
+
+  /* Animated scan line effect */
+  .scan-lines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-lines::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(100, 220, 255, 0.05) 50%,
+      transparent 100%
+    );
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes scan {
+    0% { top: -100%; }
+    100% { top: 200%; }
+  }
+
+  /* Pulsing effect for buttons */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(100, 220, 255, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(100, 220, 255, 0.6);
+    }
+  }
+
+  /* Smooth transitions */
+  .smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Input focus effect */
+  .input,
+  .textarea {
+    position: relative;
+    z-index: 1;
+  }
+
+  .input:focus,
+  .textarea:focus {
+    outline: none;
+    border-color: oklch(65% 0.28 195);
+    box-shadow:
+      0 0 0 2px rgba(100, 220, 255, 0.2),
+      0 0 20px rgba(100, 220, 255, 0.15);
+  }
+
+  /* Button enhancements */
+  .btn-primary {
+    background: linear-gradient(135deg,
+      oklch(65% 0.28 195),
+      oklch(60% 0.28 210)
+    );
+    border: none;
+    box-shadow: 0 4px 15px rgba(100, 220, 255, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(100, 220, 255, 0.5);
+      background: linear-gradient(135deg,
+        oklch(70% 0.28 195),
+        oklch(65% 0.28 210)
+      );
+    }
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg,
+      oklch(68% 0.25 320),
+      oklch(65% 0.25 310)
+    );
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 100, 255, 0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 100, 255, 0.5);
+    }
+  }
+
+  /* Ensure all buttons are clickable */
+  .btn {
+    position: relative;
+    z-index: 1;
+    -webkit-tap-highlight-color: rgba(100, 220, 255, 0.3);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Badge enhancements */
+  .badge-primary {
+    background: oklch(65% 0.28 195);
+    border: 1px solid oklch(70% 0.28 195);
+    box-shadow: 0 0 10px rgba(100, 220, 255, 0.3);
+  }
+
+  .badge-secondary {
+    background: oklch(68% 0.25 320);
+    border: 1px solid oklch(73% 0.25 320);
+    box-shadow: 0 0 10px rgba(255, 100, 255, 0.3);
+  }
+
+  .badge-success {
+    background: oklch(65% 0.20 160);
+    border: 1px solid oklch(70% 0.20 160);
+    box-shadow: 0 0 10px rgba(100, 255, 150, 0.3);
+  }
+
+  .badge-warning {
+    background: oklch(70% 0.24 80);
+    border: 1px solid oklch(75% 0.24 80);
+    box-shadow: 0 0 10px rgba(255, 200, 100, 0.3);
+  }
+
+  /* Link hover effects */
+  a {
+    position: relative;
+    z-index: 1;
+    -webkit-tap-highlight-color: rgba(100, 220, 255, 0.3);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a.hover\:underline:hover {
+      text-decoration-color: oklch(65% 0.28 195);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+  }
+
+  /* Modal backdrop */
+  .modal-backdrop {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  /* Card shadows */
+  .card {
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+}
