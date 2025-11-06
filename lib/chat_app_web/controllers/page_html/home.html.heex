@@ -10,6 +10,10 @@
             <%= if @room_id do %>
               <div class="flex items-center gap-2 mt-1">
                 <p class="text-xs text-base-content/60 truncate">
+                  <%= if assigns[:room] && @room.name do %>
+                    <strong class="font-semibold">{@room.name}</strong>
+                    <span class="text-base-content/50"> • </span>
+                  <% end %>
                   Room: <code class="bg-base-300 px-1.5 py-0.5 rounded text-xs"><%= @room_id %></code>
                 </p>
                 <button
@@ -23,18 +27,23 @@
             <% end %>
           </div>
           <div class="flex items-center gap-2 ml-2">
-            <span class="text-xs sm:text-sm">
-              <strong class="text-primary"><%= @username %></strong>
-            </span>
+            <a href="/profile" class="text-xs sm:text-sm">
+              <strong class="text-primary hover:underline"><%= @username %></strong>
+            </a>
             <a href="/auth/sign_out" class="btn btn-xs sm:btn-sm btn-outline">Sign Out</a>
           </div>
         </div>
       </div>
 
       <%= if @room_id do %>
-        <!-- Leave button - mobile optimized -->
+        <!-- Room actions - mobile optimized -->
         <div class="bg-base-200 border-b border-base-300 p-2 sm:p-3">
-          <a href="/" class="btn btn-xs sm:btn-sm btn-outline whitespace-nowrap">Leave</a>
+          <div class="flex items-center justify-between gap-2">
+            <a href="/" class="btn btn-xs sm:btn-sm btn-outline whitespace-nowrap">Leave</a>
+            <%= if assigns[:room_member] && assigns[:room_member].role == "admin" do %>
+              <a href={~p"/room/#{@room_id}/manage"} class="btn btn-xs sm:btn-sm btn-primary whitespace-nowrap">Manage Room</a>
+            <% end %>
+          </div>
         </div>
 
         <!-- Messages Container - mobile optimized full height -->
@@ -82,16 +91,37 @@
               <div class="card-body items-center text-center p-4 sm:p-6 md:p-8">
                 <h2 class="card-title text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 md:mb-4">Join Existing Room</h2>
                 <p class="mb-3 sm:mb-4 md:mb-6 text-sm sm:text-base text-base-content/70 px-2">
-                  Have a room link? Click it to join the conversation
+                  Enter a room ID to join an existing conversation
                 </p>
-                <div class="text-xs sm:text-sm text-base-content/60 px-2">
-                  Room links look like:
+                <form id="join-room-form" class="w-full max-w-md px-2">
+                  <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <input
+                      type="text"
+                      id="join-room-id"
+                      placeholder="Enter room ID (e.g., abc123)"
+                      class="input input-bordered flex-1 min-w-0 text-sm sm:text-base"
+                      style="font-size: 16px;"
+                      required
+                    />
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto min-h-[44px] px-6">
+                      Join Room
+                    </button>
+                  </div>
+                </form>
+                <div class="text-xs sm:text-sm text-base-content/60 px-2 mt-4">
+                  Room IDs look like: <code class="bg-base-300 px-2 py-0.5 rounded">abc123</code>
                 </div>
-                <code class="bg-base-300 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-xs sm:text-sm mt-2 inline-block break-all max-w-full">
-                  /room/abc123
-                </code>
               </div>
             </div>
+            <script>
+              document.getElementById('join-room-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const roomId = document.getElementById('join-room-id').value.trim();
+                if (roomId) {
+                  window.location.href = '/room/' + encodeURIComponent(roomId);
+                }
+              });
+            </script>
           </div>
         </div>
       <% end %>
