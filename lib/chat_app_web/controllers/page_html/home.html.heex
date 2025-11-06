@@ -72,32 +72,32 @@
         </script>
       <% else %>
         <!-- Lobby - No room selected - mobile first -->
-        <div class="flex-1 overflow-y-auto p-4 sm:p-8">
-          <div class="max-w-2xl mx-auto space-y-4">
-            <div class="card bg-base-200 shadow-xl">
-              <div class="card-body items-center text-center p-4 sm:p-8">
-                <h2 class="card-title text-xl sm:text-2xl mb-2 sm:mb-4">Create New Room</h2>
-                <p class="mb-4 sm:mb-6 text-sm sm:text-base text-base-content/70">
+        <div class="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8">
+          <div class="max-w-2xl mx-auto space-y-3 sm:space-y-4">
+            <div class="card bg-base-200 shadow-xl border border-base-300">
+              <div class="card-body items-center text-center p-4 sm:p-6 md:p-8">
+                <h2 class="card-title text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 md:mb-4">Create New Room</h2>
+                <p class="mb-3 sm:mb-4 md:mb-6 text-sm sm:text-base text-base-content/70 px-2">
                   Start a new chat room and share the link with others
                 </p>
-                <a href="/create_room" class="btn btn-primary w-full sm:w-auto sm:btn-wide">
+                <a href="/create_room" class="btn btn-primary w-full sm:w-auto min-h-[44px] text-sm sm:text-base px-6 py-3 sm:btn-wide">
                   Create Room
                 </a>
               </div>
             </div>
 
-            <div class="card bg-base-200 shadow-xl">
-              <div class="card-body items-center text-center p-4 sm:p-8">
-                <h2 class="card-title text-xl sm:text-2xl mb-2 sm:mb-4">Join Existing Room</h2>
-                <p class="mb-4 sm:mb-6 text-sm sm:text-base text-base-content/70">
+            <div class="card bg-base-200 shadow-xl border border-base-300">
+              <div class="card-body items-center text-center p-4 sm:p-6 md:p-8">
+                <h2 class="card-title text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 md:mb-4">Join Existing Room</h2>
+                <p class="mb-3 sm:mb-4 md:mb-6 text-sm sm:text-base text-base-content/70 px-2">
                   Have a room link? Click it to join the conversation
                 </p>
-                <div class="text-xs sm:text-sm text-base-content/60">
-                  Room links look like:<br/>
-                  <code class="bg-base-300 px-2 py-1 rounded text-xs mt-2 inline-block">
-                    /room/abc123
-                  </code>
+                <div class="text-xs sm:text-sm text-base-content/60 px-2">
+                  Room links look like:
                 </div>
+                <code class="bg-base-300 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-xs sm:text-sm mt-2 inline-block break-all max-w-full">
+                  /room/abc123
+                </code>
               </div>
             </div>
           </div>

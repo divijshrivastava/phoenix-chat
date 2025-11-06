@@ -1,9 +1,18 @@
 defmodule ChatAppWeb.AuthController do
   use ChatAppWeb, :controller
-  plug Ueberauth
+  
+  # Process callbacks through Ueberauth
+  plug Ueberauth when action in [:callback]
 
   alias ChatApp.Accounts
   require Logger
+
+  @doc """
+  Initiates OAuth request - handled by Ueberauth plug
+  """
+  def request(conn, _params) do
+    Ueberauth.call(conn, Ueberauth.init([]))
+  end
 
   @doc """
   Handles the OAuth callback from providers (success or failure)
