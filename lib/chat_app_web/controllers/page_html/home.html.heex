@@ -54,17 +54,19 @@
         </div>
 
         <!-- Message Input - fixed at bottom on mobile -->
-        <div class="bg-base-200 border-t border-base-300 p-2 sm:p-3">
-          <div class="text-xs text-base-content/60 mb-1" id="username-display"></div>
-          <div class="flex gap-2">
+        <div class="bg-base-200 border-t border-base-300 p-3 sm:p-4">
+          <div class="text-xs text-base-content/60 mb-2" id="username-display"></div>
+          <div class="flex gap-2 items-center w-full min-w-0">
             <input type="hidden" id="room-id" value={@room_id} />
             <input
               type="text"
               id="message-input"
               placeholder="Type message..."
-              class="input input-sm sm:input-md input-bordered flex-1"
+              class="input input-md sm:input-lg input-bordered flex-1 min-w-0 text-base"
             />
-            <button id="send-button" class="btn btn-sm sm:btn-md btn-primary">Send</button>
+            <button id="send-button" class="btn btn-primary min-w-[80px] sm:min-w-[100px] flex-shrink-0 text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3">
+              Send
+            </button>
           </div>
         </div>
         <script>
