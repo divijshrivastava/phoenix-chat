@@ -55,8 +55,8 @@
 
         <!-- Message Input - fixed at bottom on mobile -->
         <div class="bg-base-200 border-t border-base-300 p-2 sm:p-3">
+          <div class="text-xs text-base-content/60 mb-1" id="username-display"></div>
           <div class="flex gap-2">
-            <input type="hidden" id="username" value={@username} />
             <input type="hidden" id="room-id" value={@room_id} />
             <input
               type="text"
@@ -67,6 +67,9 @@
             <button id="send-button" class="btn btn-sm sm:btn-md btn-primary">Send</button>
           </div>
         </div>
+        <script>
+          window.userToken = "<%= @user_token %>";
+        </script>
       <% else %>
         <!-- Lobby - No room selected - mobile first -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-8">

@@ -67,7 +67,7 @@ config :tesla, disable_deprecated_builder_warning: true
 config :ueberauth, Ueberauth,
   providers: [
     google: {Ueberauth.Strategy.Google, [default_scope: "email profile"]},
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user", send_redirect_uri: false]}
   ]
 
 # OAuth credentials are configured in runtime.exs for production

@@ -3,11 +3,11 @@ import {Socket} from "phoenix"
 // Only initialize chat if user is signed in and in a room
 const messagesContainer = document.querySelector("#messages")
 const messageInput = document.querySelector("#message-input")
-const usernameInput = document.querySelector("#username")
 const roomIdInput = document.querySelector("#room-id")
 const sendButton = document.querySelector("#send-button")
+const usernameDisplay = document.querySelector("#username-display")
 
-if (messagesContainer && messageInput && usernameInput && roomIdInput && sendButton) {
+if (messagesContainer && messageInput && roomIdInput && sendButton) {
   const roomId = roomIdInput.value
 
   let socket = new Socket("/socket", {params: {token: window.userToken}})
@@ -17,10 +17,9 @@ if (messagesContainer && messageInput && usernameInput && roomIdInput && sendBut
 
   const sendMessage = () => {
     const message = messageInput.value.trim()
-    const username = usernameInput.value.trim() || "Anonymous"
 
     if (message !== "") {
-      channel.push("new_message", {body: message, username: username})
+      channel.push("new_message", {body: message})
       messageInput.value = ""
     }
   }
@@ -61,6 +60,11 @@ if (messagesContainer && messageInput && usernameInput && roomIdInput && sendBut
   channel.join()
     .receive("ok", resp => {
       console.log("Joined successfully", resp)
+
+      // Display username
+      if (usernameDisplay && resp.username) {
+        usernameDisplay.textContent = `Signed in as: ${resp.username}`
+      }
 
       // Clear loading message
       messagesContainer.innerHTML = ""
