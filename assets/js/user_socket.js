@@ -33,8 +33,19 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     }
   })
 
+  // Remove "No messages yet" message if it exists
+  function removeNoMessagesMessage() {
+    const noMessagesMsg = messagesContainer.querySelector('#no-messages-msg')
+    if (noMessagesMsg) {
+      noMessagesMsg.remove()
+    }
+  }
+
   // Display a message in the chat
   function displayMessage(msg) {
+    // Remove "No messages yet" message before adding new message
+    removeNoMessagesMessage()
+
     const messageElement = document.createElement("div")
     messageElement.className = "mb-2 p-2 bg-base-300 rounded"
 
@@ -77,6 +88,7 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
       } else {
         const welcomeMsg = document.createElement("p")
         welcomeMsg.className = "text-base-content/60 text-sm"
+        welcomeMsg.id = "no-messages-msg"
         welcomeMsg.textContent = "No messages yet. Start the conversation!"
         messagesContainer.appendChild(welcomeMsg)
       }
