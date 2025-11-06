@@ -14,6 +14,15 @@ defmodule ChatAppWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Pipeline for OAuth callbacks (no CSRF protection)
+  pipeline :auth do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {ChatAppWeb.Layouts, :root}
+    plug :put_secure_browser_headers
+  end
+
   scope "/", ChatAppWeb do
     pipe_through :browser
 
@@ -24,7 +33,7 @@ defmodule ChatAppWeb.Router do
 
   # OAuth authentication routes
   scope "/auth", ChatAppWeb do
-    pipe_through :browser
+    pipe_through :auth
 
     get "/sign_out", AuthController, :sign_out
     get "/:provider", AuthController, :request
