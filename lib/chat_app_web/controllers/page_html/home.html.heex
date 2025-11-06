@@ -8,9 +8,18 @@
           <div class="flex-1 min-w-0">
             <h1 class="text-xl sm:text-2xl font-bold truncate">Phoenix Chat</h1>
             <%= if @room_id do %>
-              <p class="text-xs text-base-content/60 truncate">
-                Room: <code class="bg-base-300 px-1.5 py-0.5 rounded text-xs"><%= @room_id %></code>
-              </p>
+              <div class="flex items-center gap-2 mt-1">
+                <p class="text-xs text-base-content/60 truncate">
+                  Room: <code class="bg-base-300 px-1.5 py-0.5 rounded text-xs"><%= @room_id %></code>
+                </p>
+                <button
+                  onclick={"navigator.clipboard.writeText(\"#{ChatAppWeb.Endpoint.url()}/room/#{@room_id}\"); this.textContent='✓'; setTimeout(() => this.textContent='Copy', 2000)"}
+                  class="btn btn-xs btn-primary whitespace-nowrap flex-shrink-0"
+                  title="Copy room URL"
+                >
+                  Copy
+                </button>
+              </div>
             <% end %>
           </div>
           <div class="flex items-center gap-2 ml-2">
@@ -23,29 +32,9 @@
       </div>
 
       <%= if @room_id do %>
-        <!-- Room-specific actions - mobile optimized -->
+        <!-- Leave button - mobile optimized -->
         <div class="bg-base-200 border-b border-base-300 p-2 sm:p-3">
-          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-semibold mb-1">Share room:</p>
-              <div class="flex gap-1.5">
-                <input
-                  type="text"
-                  readonly
-                  value={"#{ChatAppWeb.Endpoint.url()}/room/#{@room_id}"}
-                  id="room-url"
-                  class="input input-xs sm:input-sm input-bordered flex-1 font-mono text-xs"
-                />
-                <button
-                  onclick="navigator.clipboard.writeText(document.getElementById('room-url').value); this.textContent='✓'; setTimeout(() => this.textContent='Copy', 2000)"
-                  class="btn btn-xs sm:btn-sm btn-primary whitespace-nowrap"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-            <a href="/" class="btn btn-xs sm:btn-sm btn-outline whitespace-nowrap">Leave</a>
-          </div>
+          <a href="/" class="btn btn-xs sm:btn-sm btn-outline whitespace-nowrap">Leave</a>
         </div>
 
         <!-- Messages Container - mobile optimized full height -->
