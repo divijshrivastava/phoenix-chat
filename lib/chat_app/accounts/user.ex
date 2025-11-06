@@ -3,12 +3,12 @@ defmodule ChatApp.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
-    field :name, :string
-    field :avatar, :string
-    field :provider, :string
-    field :provider_id, :string
-    field :provider_token, :string
+    field(:email, :string)
+    field(:name, :string)
+    field(:avatar, :string)
+    field(:provider, :string)
+    field(:provider_id, :string)
+    field(:provider_token, :string)
 
     timestamps(type: :utc_datetime)
   end

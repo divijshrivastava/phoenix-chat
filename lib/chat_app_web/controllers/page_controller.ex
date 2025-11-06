@@ -15,7 +15,18 @@ defmodule ChatAppWeb.PageController do
         nil
       end
 
-    render(conn, :home, username: username, room_id: nil, user_token: user_token)
+    user_rooms =
+      case user_id do
+        nil -> []
+        id -> Rooms.list_user_rooms(id)
+      end
+
+    render(conn, :home,
+      username: username,
+      room_id: nil,
+      user_token: user_token,
+      user_rooms: user_rooms
+    )
   end
 
   def profile(conn, _params) do
@@ -23,8 +34,10 @@ defmodule ChatAppWeb.PageController do
 
     if user_id do
       user = Accounts.get_user(user_id)
-      user_rooms = Rooms.list_rooms()
-      |> Enum.filter(fn room -> room.created_by_id == user_id end)
+
+      user_rooms =
+        Rooms.list_rooms()
+        |> Enum.filter(fn room -> room.created_by_id == user_id end)
 
       render(conn, :profile, user: user, user_rooms: user_rooms)
     else
@@ -43,8 +56,9 @@ defmodule ChatAppWeb.PageController do
 
         if user do
           # Get rooms created by this user
-          user_rooms = Rooms.list_rooms()
-          |> Enum.filter(fn room -> room.created_by_id == user_id end)
+          user_rooms =
+            Rooms.list_rooms()
+            |> Enum.filter(fn room -> room.created_by_id == user_id end)
 
           render(conn, :public_profile,
             user: user,
@@ -70,14 +84,14 @@ defmodule ChatAppWeb.PageController do
 
     if username && user_id do
       user_token = Phoenix.Token.sign(conn, "user socket", user_id)
-      
+
       # Get room details including name and user role
       room = Rooms.get_room(room_id)
       room_member = if room, do: Rooms.get_room_member(room_id, user_id), else: nil
-      
-      render(conn, :home, 
-        username: username, 
-        room_id: room_id, 
+
+      render(conn, :home,
+        username: username,
+        room_id: room_id,
         user_token: user_token,
         room: room,
         room_member: room_member
@@ -106,7 +120,7 @@ defmodule ChatAppWeb.PageController do
     user_id = get_session(conn, :user_id)
 
     if user_id do
-      name = room_params["name"] |> String.trim() |> then(&(&1 != "" && &1 || nil))
+      name = room_params["name"] |> String.trim() |> then(&((&1 != "" && &1) || nil))
       is_private = room_params["is_private"] == "true"
 
       attrs = %{

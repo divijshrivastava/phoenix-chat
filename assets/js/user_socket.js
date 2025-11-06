@@ -129,7 +129,26 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     })
     .receive("error", resp => {
       console.log("Unable to join", resp)
-      messagesContainer.innerHTML = '<p class="text-error">Unable to join room. Please try again.</p>'
+      const reason = (resp && (resp.reason || resp.error || resp.message)) ? String(resp.reason || resp.error || resp.message) : "Please try again."
+      messagesContainer.innerHTML = `
+        <div class="flex items-center justify-center h-[60vh]">
+          <div class="glass-card border border-error/30 rounded-2xl p-6 sm:p-8 text-center max-w-md w-full shadow-lg fade-in">
+            <div class="mx-auto mb-3 sm:mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-error/10 text-error">✖</div>
+            <h3 class="text-lg sm:text-xl font-semibold mb-2">Unable to join room</h3>
+            <p class="text-sm sm:text-base text-base-content/70 mb-4">${escapeHtml(reason)}</p>
+            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+              <button id="retry-join" class="btn btn-primary">Retry</button>
+              <a href="/" class="btn btn-outline">Leave</a>
+            </div>
+          </div>
+        </div>
+      `
+      const retryBtn = document.getElementById('retry-join')
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+          window.location.reload()
+        })
+      }
     })
 
   // Function to load and display members

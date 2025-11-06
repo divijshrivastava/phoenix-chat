@@ -13,8 +13,8 @@
           </div>
         </div>
       </div>
-
-      <!-- Profile Content -->
+      
+<!-- Profile Content -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-8">
         <div class="max-w-2xl mx-auto space-y-4 fade-in">
           <!-- User Info Card -->
@@ -22,22 +22,30 @@
             <div class="card-body p-4 sm:p-6 md:p-8">
               <div class="flex items-center gap-4 mb-4">
                 <%= if @user.avatar do %>
-                  <img src={@user.avatar} alt="Avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full" />
+                  <img
+                    src={@user.avatar}
+                    alt="Avatar"
+                    class="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
+                  />
                 <% else %>
                   <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-primary-content">
                     {String.first(@user.name || @user.email || "U") |> String.upcase()}
                   </div>
                 <% end %>
                 <div class="flex-1 min-w-0">
-                  <h2 class="text-xl sm:text-2xl font-bold truncate">{@user.name || @user.email}</h2>
+                  <h2 class="text-xl sm:text-2xl font-bold truncate">
+                    {@user.name || @user.email}
+                  </h2>
                   <p class="text-sm text-base-content/60 truncate">{@user.email}</p>
-                  <p class="text-xs text-base-content/50 mt-1">Provider: {String.capitalize(@user.provider || "unknown")}</p>
+                  <p class="text-xs text-base-content/50 mt-1">
+                    Provider: {String.capitalize(@user.provider || "unknown")}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Created Rooms -->
+          
+<!-- Created Rooms -->
           <div class="glass-card cyber-hover rounded-2xl">
             <div class="card-body p-4 sm:p-6 md:p-8">
               <h3 class="text-lg sm:text-xl font-bold mb-4">Rooms Created</h3>
@@ -47,7 +55,9 @@
                     <div class="flex items-center justify-between p-3 glass-panel rounded-lg cyber-hover">
                       <div class="flex-1 min-w-0">
                         <h4 class="font-semibold truncate">{room.name || "Unnamed Room"}</h4>
-                        <p class="text-xs text-base-content/60 truncate">Room ID: {room.room_id}</p>
+                        <p class="text-xs text-base-content/60 truncate">
+                          Room ID: {room.room_id}
+                        </p>
                       </div>
                       <a href={~p"/room/#{room.room_id}"} class="btn btn-xs btn-primary">Join</a>
                     </div>
@@ -71,4 +81,3 @@
     </div>
   <% end %>
 </div>
-

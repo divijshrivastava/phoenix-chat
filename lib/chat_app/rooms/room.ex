@@ -3,11 +3,11 @@ defmodule ChatApp.Rooms.Room do
   import Ecto.Changeset
 
   schema "rooms" do
-    field :room_id, :string
-    field :name, :string
-    field :is_private, :boolean, default: false
-    belongs_to :created_by, ChatApp.Accounts.User, foreign_key: :created_by_id
-    has_many :room_members, ChatApp.Rooms.RoomMember
+    field(:room_id, :string)
+    field(:name, :string)
+    field(:is_private, :boolean, default: false)
+    belongs_to(:created_by, ChatApp.Accounts.User, foreign_key: :created_by_id)
+    has_many(:room_members, ChatApp.Rooms.RoomMember)
 
     timestamps(type: :utc_datetime)
   end
@@ -20,4 +20,3 @@ defmodule ChatApp.Rooms.Room do
     |> unique_constraint(:room_id)
   end
 end
-

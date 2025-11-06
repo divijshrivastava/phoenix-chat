@@ -41,9 +41,28 @@ defmodule ChatApp.Rooms do
     |> Repo.preload([:created_by])
   end
 
+  @doc """
+  Lists all rooms that a given user is a member of.
+
+  Returns rooms joined via `room_members` (including ones the user created,
+  since creators are added as admins on create). Rooms are preloaded with
+  `:created_by` and `room_members` (with associated `:user`) so callers can
+  display metadata such as the member's role if desired.
+  """
+  def list_user_rooms(user_id) when is_integer(user_id) do
+    from(r in Room,
+      join: m in RoomMember,
+      on: m.room_id == r.id,
+      where: m.user_id == ^user_id,
+      preload: [:created_by, room_members: [:user]]
+    )
+    |> Repo.all()
+  end
+
   # Room Member Management
   def add_member(room_id, user_id, attrs \\ %{}) do
     room = get_room(room_id)
+
     if room do
       %RoomMember{}
       |> RoomMember.changeset(
@@ -160,6 +179,7 @@ defmodule ChatApp.Rooms do
       [] ->
         :ets.insert(@table_name, {room_id, []})
         {:ok, room_id}
+
       _ ->
         {:ok, room_id}
     end

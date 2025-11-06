@@ -6,4 +6,3 @@ defmodule ChatAppWeb.RoomHTML do
 
   embed_templates "room_html/*"
 end
-

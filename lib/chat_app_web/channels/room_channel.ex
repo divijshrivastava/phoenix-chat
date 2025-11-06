@@ -19,27 +19,29 @@ defmodule ChatAppWeb.RoomChannel do
         {:error, %{reason: "You are banned from this room"}}
       else
         # Add user as member if not already a member
-        {final_member, is_new_member} = if !room_member do
-          # Check if room is private
-          is_private = room.is_private
+        {final_member, is_new_member} =
+          if !room_member do
+            # Check if room is private
+            is_private = room.is_private
 
-          # For public rooms, auto-approve. For private rooms, require approval
-          auto_approve = !is_private
+            # For public rooms, auto-approve. For private rooms, require approval
+            auto_approve = !is_private
 
-          case Rooms.add_member(room_id, user_id, %{role: "user", approved: auto_approve}) do
-            {:ok, member} -> {member, true}
-            {:error, _} -> {nil, false}
+            case Rooms.add_member(room_id, user_id, %{role: "user", approved: auto_approve}) do
+              {:ok, member} -> {member, true}
+              {:error, _} -> {nil, false}
+            end
+          else
+            {room_member, false}
           end
-        else
-          {room_member, false}
-        end
 
         # Check if approval is required
-        pending_approval = if final_member && !final_member.approved do
-          true
-        else
-          false
-        end
+        pending_approval =
+          if final_member && !final_member.approved do
+            true
+          else
+            false
+          end
 
         if pending_approval do
           {:error, %{reason: "Waiting for admin approval"}}
@@ -81,7 +83,7 @@ defmodule ChatAppWeb.RoomChannel do
 
     # Check if user is banned or not approved
     room_member = Rooms.get_room_member(room_id, user_id)
-    
+
     if room_member && room_member.banned do
       {:reply, {:error, %{reason: "You are banned from this room"}}, socket}
     else

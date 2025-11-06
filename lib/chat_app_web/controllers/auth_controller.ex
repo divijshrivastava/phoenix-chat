@@ -1,6 +1,6 @@
 defmodule ChatAppWeb.AuthController do
   use ChatAppWeb, :controller
-  
+
   # Process callbacks through Ueberauth
   plug Ueberauth when action in [:callback]
 
@@ -19,6 +19,7 @@ defmodule ChatAppWeb.AuthController do
   """
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     Logger.info("OAuth callback success for provider: #{auth.provider}")
+
     case Accounts.upsert_user_from_auth(auth) do
       {:ok, user} ->
         return_to = get_session(conn, :return_to) || ~p"/"
@@ -39,6 +40,7 @@ defmodule ChatAppWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
     Logger.error("OAuth callback failure: #{inspect(fails)}")
+
     conn
     |> put_flash(:error, "Authentication failed. Please try again.")
     |> redirect(to: ~p"/")
@@ -46,7 +48,10 @@ defmodule ChatAppWeb.AuthController do
 
   # Catch-all for debugging
   def callback(conn, params) do
-    Logger.error("OAuth callback - no auth data in assigns. Params: #{inspect(params)}, Assigns: #{inspect(conn.assigns)}")
+    Logger.error(
+      "OAuth callback - no auth data in assigns. Params: #{inspect(params)}, Assigns: #{inspect(conn.assigns)}"
+    )
+
     conn
     |> put_flash(:error, "Authentication error. Please try again.")
     |> redirect(to: ~p"/")

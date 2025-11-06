@@ -12,15 +12,16 @@ defmodule ChatAppWeb.RoomController do
 
       # Only allow approved members to see the member list
       if room_member && room_member.approved && !room_member.banned do
-        members = Rooms.list_room_members(room_id)
-        |> Enum.filter(fn m -> m.approved end)
-        |> Enum.map(fn m ->
-          %{
-            id: m.user.id,
-            name: m.user.name || m.user.email,
-            role: m.role
-          }
-        end)
+        members =
+          Rooms.list_room_members(room_id)
+          |> Enum.filter(fn m -> m.approved end)
+          |> Enum.map(fn m ->
+            %{
+              id: m.user.id,
+              name: m.user.name || m.user.email,
+              role: m.role
+            }
+          end)
 
         json(conn, %{members: members})
       else
@@ -69,7 +70,7 @@ defmodule ChatAppWeb.RoomController do
       room = Rooms.get_room(room_id)
 
       if room && Rooms.can_rename_room?(room_id, user_id) do
-        trimmed_name = name |> String.trim() |> then(&(&1 != "" && &1 || nil))
+        trimmed_name = name |> String.trim() |> then(&((&1 != "" && &1) || nil))
 
         case Rooms.update_room(room, %{name: trimmed_name}) do
           {:ok, _updated_room} ->
@@ -160,4 +161,3 @@ defmodule ChatAppWeb.RoomController do
     end
   end
 end
-

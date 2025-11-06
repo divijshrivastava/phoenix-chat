@@ -5,11 +5,11 @@ defmodule ChatApp.Rooms.RoomMember do
   @roles ["admin", "editor", "user"]
 
   schema "room_members" do
-    field :role, :string, default: "user"
-    field :approved, :boolean, default: false
-    field :banned, :boolean, default: false
-    belongs_to :user, ChatApp.Accounts.User
-    belongs_to :room, ChatApp.Rooms.Room
+    field(:role, :string, default: "user")
+    field(:approved, :boolean, default: false)
+    field(:banned, :boolean, default: false)
+    belongs_to(:user, ChatApp.Accounts.User)
+    belongs_to(:room, ChatApp.Rooms.Room)
 
     timestamps(type: :utc_datetime)
   end
@@ -23,4 +23,3 @@ defmodule ChatApp.Rooms.RoomMember do
     |> unique_constraint([:user_id, :room_id])
   end
 end
-
