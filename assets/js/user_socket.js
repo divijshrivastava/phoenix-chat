@@ -1,35 +1,100 @@
 import {Socket} from "phoenix"
 
-// Only initialize chat if user is signed in and in a room
 const messagesContainer = document.querySelector("#messages")
 const messageInput = document.querySelector("#message-input")
 const roomIdInput = document.querySelector("#room-id")
 const sendButton = document.querySelector("#send-button")
 const usernameDisplay = document.querySelector("#username-display")
+const userTokenInput = document.querySelector("#user-token")
+
+const joinRoomForm = document.querySelector("#join-room-form")
+const joinRoomInput = document.querySelector("#join-room-id")
+const copyRoomLinkButton = document.querySelector("#copy-room-link")
+
+if (joinRoomForm && joinRoomInput) {
+  joinRoomForm.addEventListener("submit", event => {
+    event.preventDefault()
+    const roomId = joinRoomInput.value.trim()
+    if (roomId) {
+      window.location.href = `/room/${encodeURIComponent(roomId)}`
+    }
+  })
+}
+
+if (copyRoomLinkButton) {
+  copyRoomLinkButton.addEventListener("click", async () => {
+    const roomUrl = copyRoomLinkButton.dataset.roomUrl
+    if (!roomUrl || !navigator.clipboard) {
+      return
+    }
+
+    const previousText = copyRoomLinkButton.textContent
+    try {
+      await navigator.clipboard.writeText(roomUrl)
+      copyRoomLinkButton.textContent = "Copied"
+    } catch (_error) {
+      copyRoomLinkButton.textContent = "Copy failed"
+    }
+
+    window.setTimeout(() => {
+      copyRoomLinkButton.textContent = previousText
+    }, 1600)
+  })
+}
 
 if (messagesContainer && messageInput && roomIdInput && sendButton) {
   const roomId = roomIdInput.value
+  const userToken = userTokenInput ? userTokenInput.value : null
 
-  let socket = new Socket("/socket", {params: {token: window.userToken}})
-  socket.connect()
+  let chatSocket = new Socket("/socket", {params: {token: userToken}})
+  chatSocket.connect()
 
-  let channel = socket.channel(`room:${roomId}`, {})
+  let channel = chatSocket.channel(`room:${roomId}`, {})
+  let isSending = false
+
+  const setSendingState = sending => {
+    isSending = sending
+    messageInput.disabled = sending
+    sendButton.disabled = sending
+    sendButton.textContent = sending ? "Sending..." : "Send"
+  }
+
+  const showTransientError = text => {
+    const error = document.createElement("div")
+    error.className = "mb-2 rounded-xl border border-error/50 bg-error/20 p-2 text-sm text-error-content"
+    error.textContent = text
+    messagesContainer.appendChild(error)
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+
+    window.setTimeout(() => {
+      error.remove()
+    }, 2600)
+  }
 
   const sendMessage = () => {
     const message = messageInput.value.trim()
-
-    if (message !== "") {
-      channel.push("new_message", {body: message})
-      messageInput.value = ""
-      // Blur the input to prevent mobile zoom and auto-scroll issues
-      messageInput.blur()
-      // Prevent immediate refocus
-      setTimeout(() => {
-        if (document.activeElement === messageInput) {
-          messageInput.blur()
-        }
-      }, 100)
+    if (message === "" || isSending) {
+      return
     }
+
+    setSendingState(true)
+
+    channel
+      .push("new_message", {body: message})
+      .receive("ok", () => {
+        messageInput.value = ""
+        setSendingState(false)
+      })
+      .receive("error", err => {
+        console.error("Error sending message:", err)
+        setSendingState(false)
+        showTransientError(err.reason || "Failed to send message")
+      })
+      .receive("timeout", () => {
+        console.error("Message send timeout")
+        setSendingState(false)
+        showTransientError("Message send timeout. Please try again.")
+      })
   }
 
   sendButton.addEventListener("click", sendMessage)
@@ -39,55 +104,42 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     }
   })
 
-  // Remove "No messages yet" message if it exists
   function removeNoMessagesMessage() {
-    const noMessagesMsg = messagesContainer.querySelector('#no-messages-msg')
+    const noMessagesMsg = messagesContainer.querySelector("#no-messages-msg")
     if (noMessagesMsg) {
       noMessagesMsg.remove()
     }
   }
 
-  // Display a message in the chat
   function displayMessage(msg) {
-    // Remove "No messages yet" message before adding new message
     removeNoMessagesMessage()
 
     const messageElement = document.createElement("div")
-    messageElement.className = "mb-2 p-3 message-bubble rounded-lg fade-in"
+    messageElement.className = "message-bubble mb-2"
 
-    // Format timestamp if present
     let timeStr = ""
     if (msg.timestamp) {
       const date = new Date(msg.timestamp)
-      timeStr = `<span class="text-xs text-base-content/50 ml-2">${date.toLocaleTimeString()}</span>`
+      timeStr = `<span class="ml-2 text-xs text-base-content/60">${date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>`
     }
 
-    // Make username clickable if user_id is available
     let usernameHtml = ""
     if (msg.user_id) {
-      usernameHtml = `<a href="/user/${msg.user_id}" class="font-bold text-primary hover:underline">${escapeHtml(msg.username)}</a>:`
+      usernameHtml = `<a href="/user/${msg.user_id}" class="font-semibold text-secondary hover:underline">${escapeHtml(msg.username)}</a>`
     } else {
-      usernameHtml = `<span class="font-bold text-primary">${escapeHtml(msg.username)}:</span>`
+      usernameHtml = `<span class="font-semibold text-secondary">${escapeHtml(msg.username)}</span>`
     }
 
-    messageElement.innerHTML = `
-      ${usernameHtml}
-      <span class="ml-2">${escapeHtml(msg.body)}</span>
-      ${timeStr}
-    `
-
+    messageElement.innerHTML = `${usernameHtml}<span class="mx-1 text-base-content/40">·</span><span class="text-base-content">${escapeHtml(msg.body)}</span>${timeStr}`
     messagesContainer.appendChild(messageElement)
     messagesContainer.scrollTop = messagesContainer.scrollHeight
   }
 
-  // Display join notification
   function displayJoinNotification(username) {
-    const notificationElement = document.createElement("div")
-    notificationElement.className = "mb-2 p-2 glass-panel rounded-lg text-center fade-in"
-    notificationElement.innerHTML = `
-      <span class="text-sm neon-cyan italic">✨ ${escapeHtml(username)} has joined the room</span>
-    `
-    messagesContainer.appendChild(notificationElement)
+    const wrapper = document.createElement("div")
+    wrapper.className = "mb-2 text-center"
+    wrapper.innerHTML = `<span class="notice-bubble">${escapeHtml(username)} joined the room</span>`
+    messagesContainer.appendChild(wrapper)
     messagesContainer.scrollTop = messagesContainer.scrollHeight
   }
 
@@ -95,63 +147,56 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
     displayMessage(msg)
   })
 
-  // Reload members when someone joins
   channel.on("user_joined", msg => {
     displayJoinNotification(msg.username)
     loadMembers()
   })
 
-  channel.join()
+  channel
+    .join()
     .receive("ok", resp => {
-      console.log("Joined successfully", resp)
-
-      // Display username
       if (usernameDisplay && resp.username) {
-        usernameDisplay.textContent = `Signed in as: ${resp.username}`
+        usernameDisplay.textContent = `Signed in as ${resp.username}`
       }
 
-      // Clear loading message
       messagesContainer.innerHTML = ""
 
-      // Display message history
       if (resp.messages && resp.messages.length > 0) {
         resp.messages.forEach(msg => displayMessage(msg))
       } else {
         const welcomeMsg = document.createElement("p")
-        welcomeMsg.className = "text-base-content/60 text-sm"
+        welcomeMsg.className = "text-sm text-base-content/70"
         welcomeMsg.id = "no-messages-msg"
-        welcomeMsg.textContent = "No messages yet. Start the conversation!"
+        welcomeMsg.textContent = "No messages yet. Start the conversation."
         messagesContainer.appendChild(welcomeMsg)
       }
 
-      // Load and update member count
       loadMembers()
     })
     .receive("error", resp => {
-      console.log("Unable to join", resp)
-      const reason = (resp && (resp.reason || resp.error || resp.message)) ? String(resp.reason || resp.error || resp.message) : "Please try again."
+      const reason = (resp && (resp.reason || resp.error || resp.message))
+        ? String(resp.reason || resp.error || resp.message)
+        : "Please try again."
+
       messagesContainer.innerHTML = `
-        <div class="flex items-center justify-center h-[60vh]">
-          <div class="glass-card border border-error/30 rounded-2xl p-6 sm:p-8 text-center max-w-md w-full shadow-lg fade-in">
-            <div class="mx-auto mb-3 sm:mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-error/10 text-error">✖</div>
-            <h3 class="text-lg sm:text-xl font-semibold mb-2">Unable to join room</h3>
-            <p class="text-sm sm:text-base text-base-content/70 mb-4">${escapeHtml(reason)}</p>
-            <div class="flex flex-col sm:flex-row gap-2 justify-center">
-              <button id="retry-join" class="btn btn-primary">Retry</button>
-              <a href="/" class="btn btn-outline">Leave</a>
-            </div>
+        <div class="mx-auto mt-12 max-w-lg rounded-3xl border border-error/40 bg-error/15 p-6 text-center">
+          <h3 class="text-lg font-semibold">Unable to join room</h3>
+          <p class="mt-2 text-sm text-base-content/75">${escapeHtml(reason)}</p>
+          <div class="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
+            <button id="retry-join" class="ui-btn ui-btn-primary">Retry</button>
+            <a href="/" class="ui-btn ui-btn-soft">Leave</a>
           </div>
         </div>
       `
-      const retryBtn = document.getElementById('retry-join')
+
+      const retryBtn = document.getElementById("retry-join")
       if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
+        retryBtn.addEventListener("click", () => {
           window.location.reload()
         })
       }
     })
 
-  // Function to load and display members
   function loadMembers() {
     fetch(`/room/${roomId}/members`)
       .then(response => response.json())
@@ -162,33 +207,41 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
         }
       })
       .catch(error => {
-        console.error('Error loading members:', error)
+        console.error("Error loading members:", error)
       })
   }
 
   function updateMembersList(members) {
-    const membersList = document.getElementById('members-list')
-    if (membersList) {
-      if (members.length === 0) {
-        membersList.innerHTML = '<p class="text-base-content/60 text-sm">No members yet.</p>'
-      } else {
-        membersList.innerHTML = members.map(member => {
-          const roleColor = member.role === 'admin' ? 'badge-primary' :
-                           member.role === 'editor' ? 'badge-secondary' :
-                           'badge-ghost'
-          return `
-            <div class="flex items-center justify-between p-3 glass-panel rounded-lg cyber-hover">
-              <a href="/user/${member.id}" class="font-medium truncate neon-cyan hover:underline">${escapeHtml(member.name)}</a>
-              <span class="badge ${roleColor} badge-sm">${escapeHtml(member.role)}</span>
-            </div>
-          `
-        }).join('')
-      }
+    const membersList = document.getElementById("members-list")
+    if (!membersList) {
+      return
     }
+
+    if (members.length === 0) {
+      membersList.innerHTML = '<p class="text-sm text-base-content/70">No members yet.</p>'
+      return
+    }
+
+    membersList.innerHTML = members
+      .map(member => {
+        const roleClass = member.role === "admin"
+          ? "ui-badge-admin"
+          : member.role === "editor"
+            ? "ui-badge-editor"
+            : "ui-badge-member"
+
+        return `
+          <div class="ui-card flex items-center justify-between gap-3 rounded-2xl p-3">
+            <a href="/user/${member.id}" class="truncate font-medium text-base-content hover:underline">${escapeHtml(member.name)}</a>
+            <span class="ui-badge ${roleClass}">${escapeHtml(member.role)}</span>
+          </div>
+        `
+      })
+      .join("")
   }
 
   function updateMembersCount(count) {
-    const membersCount = document.getElementById('members-count')
+    const membersCount = document.getElementById("members-count")
     if (membersCount) {
       membersCount.textContent = count
     }
@@ -196,14 +249,13 @@ if (messagesContainer && messageInput && roomIdInput && sendButton) {
 }
 
 function escapeHtml(text) {
+  const value = typeof text === "string" ? text : String(text || "")
   const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   }
-  return text.replace(/[&<>"']/g, m => map[m])
+  return value.replace(/[&<>"']/g, m => map[m])
 }
-
-export default socket

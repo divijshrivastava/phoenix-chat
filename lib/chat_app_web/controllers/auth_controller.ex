@@ -10,8 +10,25 @@ defmodule ChatAppWeb.AuthController do
   @doc """
   Initiates OAuth request - handled by Ueberauth plug
   """
-  def request(conn, _params) do
-    Ueberauth.call(conn, Ueberauth.init([]))
+  def request(%{path_params: %{"provider" => provider}} = conn, _params) do
+    case strategy_for_provider(provider) do
+      {:ok, strategy} ->
+        if configured_oauth_provider?(strategy) do
+          Ueberauth.call(conn, Ueberauth.init([]))
+        else
+          conn
+          |> put_flash(
+            :error,
+            "#{String.capitalize(provider)} login is not configured on this server."
+          )
+          |> redirect(to: ~p"/")
+        end
+
+      :error ->
+        conn
+        |> put_flash(:error, "Unsupported authentication provider.")
+        |> redirect(to: ~p"/")
+    end
   end
 
   @doc """
@@ -66,4 +83,19 @@ defmodule ChatAppWeb.AuthController do
     |> put_flash(:info, "You have been signed out.")
     |> redirect(to: ~p"/")
   end
+
+  defp strategy_for_provider("google"), do: {:ok, Ueberauth.Strategy.Google.OAuth}
+  defp strategy_for_provider("github"), do: {:ok, Ueberauth.Strategy.Github.OAuth}
+  defp strategy_for_provider(_provider), do: :error
+
+  defp configured_oauth_provider?(strategy) do
+    config = Application.get_env(:ueberauth, strategy, [])
+    client_id = Keyword.get(config, :client_id)
+    client_secret = Keyword.get(config, :client_secret)
+
+    present_string?(client_id) and present_string?(client_secret)
+  end
+
+  defp present_string?(value) when is_binary(value), do: String.trim(value) != ""
+  defp present_string?(_value), do: false
 end

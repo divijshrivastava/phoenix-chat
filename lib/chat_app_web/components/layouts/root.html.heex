@@ -34,6 +34,21 @@
     </script>
   </head>
   <body>
+    <div
+      id="global-flash"
+      class="pointer-events-none fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-xl px-4"
+    >
+      <%= if @flash["info"] do %>
+        <p class="pointer-events-auto mb-2 rounded-xl border border-info/40 bg-info/20 px-4 py-3 text-sm text-base-content shadow-lg">
+          {@flash["info"]}
+        </p>
+      <% end %>
+      <%= if @flash["error"] do %>
+        <p class="pointer-events-auto mb-2 rounded-xl border border-error/50 bg-error/20 px-4 py-3 text-sm text-base-content shadow-lg">
+          {@flash["error"]}
+        </p>
+      <% end %>
+    </div>
     {@inner_content}
   </body>
 </html>

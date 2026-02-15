@@ -1,142 +1,147 @@
-<div class="min-h-screen bg-base-100 flex flex-col">
-  <div class="flex flex-col h-screen">
-    <!-- Header -->
-    <div class="bg-base-200 shadow-lg p-3 sm:p-4">
-      <div class="flex items-center justify-between">
-        <div class="flex-1 min-w-0">
-          <h1 class="text-xl sm:text-2xl font-bold truncate">Manage Room</h1>
-          <p class="text-xs text-base-content/60 truncate mt-1">
+<div class="min-h-screen aurora-bg ui-shell text-base-content">
+  <div class="mx-auto flex h-screen w-full max-w-5xl flex-col px-3 py-3 sm:px-5 sm:py-5">
+    <header class="ui-panel rounded-2xl px-4 py-3 sm:px-6 sm:py-4">
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-xs uppercase tracking-[0.16em] text-base-content/60">Administration</p>
+          <h1 class="truncate text-xl font-semibold sm:text-2xl">Manage Room</h1>
+          <p class="mt-1 truncate text-xs text-base-content/70 sm:text-sm">
             <%= if @room.name do %>
-              {@room.name} •
+              <span class="font-semibold">{@room.name}</span>
+              <span class="mx-1 text-base-content/50">•</span>
             <% end %>
-            Room ID: {@room_id}
+            Room ID
+            <span class="ml-1 rounded-md border border-white/15 bg-white/10 px-2 py-0.5 font-mono text-[11px] sm:text-xs">
+              {@room_id}
+            </span>
           </p>
         </div>
-        <div class="flex items-center gap-2 ml-2">
-          <a href={~p"/room/#{@room_id}"} class="btn btn-xs sm:btn-sm btn-outline">
-            Back to Room
-          </a>
-          <a href="/auth/sign_out" class="btn btn-xs sm:btn-sm btn-outline">Sign Out</a>
+        <div class="flex items-center gap-2">
+          <a href={~p"/room/#{@room_id}"} class="ui-btn ui-btn-soft text-sm">Back to Room</a>
+          <a href="/auth/sign_out" class="ui-btn ui-btn-soft text-sm">Sign Out</a>
         </div>
       </div>
-    </div>
-    
-<!-- Management Content -->
-    <div class="flex-1 overflow-y-auto p-4 sm:p-8">
-      <div class="max-w-3xl mx-auto space-y-6">
-        <!-- Rename Room (Admin/Editor) -->
-        <div class="card bg-base-200 shadow-xl">
-          <div class="card-body p-4 sm:p-6">
-            <h2 class="card-title text-lg sm:text-xl mb-4">Rename Room</h2>
-            <.form
-              for={to_form(%{}, as: :room)}
-              action={~p"/room/#{@room_id}/rename"}
-              method="post"
-              class="space-y-4"
-            >
-              <div>
-                <label for="room_name" class="block text-sm font-medium mb-2">Room Name</label>
-                <input
-                  type="text"
-                  name="room[name]"
-                  id="room_name"
-                  value={@room.name || ""}
-                  placeholder="Enter room name..."
-                  class="input input-bordered w-full"
-                  maxlength="100"
-                />
-              </div>
-              <button type="submit" class="btn btn-primary">Update Name</button>
-            </.form>
-          </div>
-        </div>
-        
-<!-- Pending Approvals (Admin only) -->
-        <%= if @room_member.role == "admin" && length(@pending_approvals) > 0 do %>
-          <div class="card bg-base-200 shadow-xl">
-            <div class="card-body p-4 sm:p-6">
-              <h2 class="card-title text-lg sm:text-xl mb-4">Pending Approvals</h2>
-              <div class="space-y-3">
-                <%= for member <- @pending_approvals do %>
-                  <div class="flex items-center justify-between p-3 bg-base-300 rounded-lg">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="font-semibold truncate">
-                        {member.user.name || member.user.email}
-                      </h4>
-                      <p class="text-xs text-base-content/60">Role: {member.role}</p>
-                    </div>
-                    <.form
-                      for={to_form(%{}, as: :approve)}
-                      action={~p"/room/#{@room_id}/approve"}
-                      method="post"
-                      class="inline"
-                    >
-                      <input type="hidden" name="user_id" value={member.user_id} />
-                      <button type="submit" class="btn btn-xs sm:btn-sm btn-primary">
-                        Approve
-                      </button>
-                    </.form>
-                  </div>
-                <% end %>
-              </div>
+    </header>
+
+    <main class="mt-4 flex-1 overflow-y-auto pb-4">
+      <div class="space-y-4">
+        <section class="ui-card rounded-3xl p-5 sm:p-6">
+          <h2 class="text-lg font-semibold sm:text-xl">Rename Room</h2>
+          <p class="mt-1 text-sm text-base-content/70">
+            Update the display name shown in the room header.
+          </p>
+          <.form
+            for={to_form(%{}, as: :room)}
+            action={~p"/room/#{@room_id}/rename"}
+            method="post"
+            class="mt-4 space-y-3"
+          >
+            <div>
+              <label for="room_name" class="mb-2 block text-sm font-medium">Room Name</label>
+              <input
+                type="text"
+                name="room[name]"
+                id="room_name"
+                value={@room.name || ""}
+                placeholder="Enter room name"
+                class="ui-input w-full"
+                maxlength="100"
+              />
             </div>
-          </div>
-        <% end %>
-        
-<!-- Room Members -->
-        <div class="card bg-base-200 shadow-xl">
-          <div class="card-body p-4 sm:p-6">
-            <h2 class="card-title text-lg sm:text-xl mb-4">Room Members</h2>
-            <%= if length(@room_members) > 0 do %>
-              <div class="space-y-3">
-                <%= for member <- @room_members do %>
-                  <div class="flex items-center justify-between p-3 bg-base-300 rounded-lg">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="font-semibold truncate">
-                        {member.user.name || member.user.email}
-                      </h4>
-                      <p class="text-xs text-base-content/60">
-                        Role: <span class="badge badge-sm">{member.role}</span>
-                      </p>
-                    </div>
-                    <%= if @room_member.role == "admin" do %>
-                      <div class="flex gap-2">
-                        <%= if member.banned do %>
-                          <.form
-                            for={to_form(%{}, as: :unban)}
-                            action={~p"/room/#{@room_id}/unban"}
-                            method="post"
-                            class="inline"
-                          >
-                            <input type="hidden" name="user_id" value={member.user_id} />
-                            <button type="submit" class="btn btn-xs sm:btn-sm btn-success">
-                              Unban
-                            </button>
-                          </.form>
-                        <% else %>
-                          <.form
-                            for={to_form(%{}, as: :ban)}
-                            action={~p"/room/#{@room_id}/ban"}
-                            method="post"
-                            class="inline"
-                          >
-                            <input type="hidden" name="user_id" value={member.user_id} />
-                            <button type="submit" class="btn btn-xs sm:btn-sm btn-error">
-                              Ban
-                            </button>
-                          </.form>
-                        <% end %>
-                      </div>
-                    <% end %>
+            <button type="submit" class="ui-btn ui-btn-primary">Update Name</button>
+          </.form>
+        </section>
+
+        <%= if @room_member.role == "admin" && length(@pending_approvals) > 0 do %>
+          <section class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
+            <h2 class="text-lg font-semibold sm:text-xl">Pending Approvals</h2>
+            <div class="mt-4 space-y-2">
+              <%= for member <- @pending_approvals do %>
+                <div class="ui-card flex items-center justify-between gap-3 rounded-2xl p-3 sm:p-4">
+                  <div class="min-w-0">
+                    <h4 class="truncate text-sm font-semibold sm:text-base">
+                      {member.user.name || member.user.email}
+                    </h4>
+                    <p class="text-xs text-base-content/65">Role requested: {member.role}</p>
                   </div>
-                <% end %>
-              </div>
-            <% else %>
-              <p class="text-base-content/60 text-sm">No members yet.</p>
-            <% end %>
-          </div>
-        </div>
+                  <.form
+                    for={to_form(%{}, as: :approve)}
+                    action={~p"/room/#{@room_id}/approve"}
+                    method="post"
+                    class="inline"
+                  >
+                    <input type="hidden" name="user_id" value={member.user_id} />
+                    <button type="submit" class="ui-btn ui-btn-primary text-sm">Approve</button>
+                  </.form>
+                </div>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+
+        <section class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
+          <h2 class="text-lg font-semibold sm:text-xl">Room Members</h2>
+
+          <%= if length(@room_members) > 0 do %>
+            <div class="mt-4 space-y-2">
+              <%= for member <- @room_members do %>
+                <div class="ui-card flex items-center justify-between gap-3 rounded-2xl p-3 sm:p-4">
+                  <div class="min-w-0">
+                    <h4 class="truncate text-sm font-semibold sm:text-base">
+                      {member.user.name || member.user.email}
+                    </h4>
+                    <p class="mt-1 text-xs text-base-content/65">
+                      <span class={[
+                        "ui-badge",
+                        if(member.role == "admin",
+                          do: "ui-badge-admin",
+                          else:
+                            if(member.role == "editor",
+                              do: "ui-badge-editor",
+                              else: "ui-badge-member"
+                            )
+                        )
+                      ]}>
+                        {member.role}
+                      </span>
+                    </p>
+                  </div>
+
+                  <%= if @room_member.role == "admin" do %>
+                    <div class="flex gap-2">
+                      <%= if member.banned do %>
+                        <.form
+                          for={to_form(%{}, as: :unban)}
+                          action={~p"/room/#{@room_id}/unban"}
+                          method="post"
+                          class="inline"
+                        >
+                          <input type="hidden" name="user_id" value={member.user_id} />
+                          <button type="submit" class="ui-btn ui-btn-primary text-sm">
+                            Unban
+                          </button>
+                        </.form>
+                      <% else %>
+                        <.form
+                          for={to_form(%{}, as: :ban)}
+                          action={~p"/room/#{@room_id}/ban"}
+                          method="post"
+                          class="inline"
+                        >
+                          <input type="hidden" name="user_id" value={member.user_id} />
+                          <button type="submit" class="ui-btn ui-btn-soft text-sm">Ban</button>
+                        </.form>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="mt-3 text-sm text-base-content/70">No members yet.</p>
+          <% end %>
+        </section>
       </div>
-    </div>
+    </main>
   </div>
 </div>

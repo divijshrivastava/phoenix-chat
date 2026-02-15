@@ -1,83 +1,87 @@
-<div class="min-h-screen gradient-bg flex flex-col scan-lines">
+<div class="min-h-screen aurora-bg ui-shell text-base-content">
   <%= if @user do %>
-    <div class="flex flex-col h-screen">
-      <!-- Header -->
-      <div class="glass-panel p-3 sm:p-4 backdrop-blur-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-xl sm:text-2xl font-bold truncate neon-cyan">👤 Profile</h1>
+    <div class="mx-auto flex h-screen w-full max-w-5xl flex-col px-3 py-3 sm:px-5 sm:py-5">
+      <header class="ui-panel rounded-2xl px-4 py-3 sm:px-6 sm:py-4">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.16em] text-base-content/60">Account</p>
+            <h1 class="text-xl font-semibold sm:text-2xl">Profile</h1>
           </div>
-          <div class="flex items-center gap-2 ml-2">
-            <a href="/" class="btn btn-xs sm:btn-sm btn-outline">Home</a>
-            <a href="/auth/sign_out" class="btn btn-xs sm:btn-sm btn-outline">Sign Out</a>
+          <div class="flex items-center gap-2">
+            <a href="/" class="ui-btn ui-btn-soft text-sm">Home</a>
+            <a href="/auth/sign_out" class="ui-btn ui-btn-soft text-sm">Sign Out</a>
           </div>
         </div>
-      </div>
-      
-<!-- Profile Content -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-8">
-        <div class="max-w-2xl mx-auto space-y-4 fade-in">
-          <!-- User Info Card -->
-          <div class="glass-card cyber-hover rounded-2xl">
-            <div class="card-body p-4 sm:p-6 md:p-8">
-              <div class="flex items-center gap-4 mb-4">
-                <%= if @user.avatar do %>
-                  <img
-                    src={@user.avatar}
-                    alt="Avatar"
-                    class="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
-                  />
-                <% else %>
-                  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-primary-content">
-                    {String.first(@user.name || @user.email || "U") |> String.upcase()}
-                  </div>
-                <% end %>
-                <div class="flex-1 min-w-0">
-                  <h2 class="text-xl sm:text-2xl font-bold truncate">
-                    {@user.name || @user.email}
-                  </h2>
-                  <p class="text-sm text-base-content/60 truncate">{@user.email}</p>
-                  <p class="text-xs text-base-content/50 mt-1">
-                    Provider: {String.capitalize(@user.provider || "unknown")}
-                  </p>
+      </header>
+
+      <main class="mt-4 flex-1 overflow-y-auto pb-4">
+        <div class="space-y-4">
+          <section class="ui-card rounded-3xl p-5 sm:p-6">
+            <div class="flex items-center gap-4">
+              <%= if @user.avatar do %>
+                <img
+                  src={@user.avatar}
+                  alt="Avatar"
+                  class="h-16 w-16 rounded-2xl sm:h-20 sm:w-20"
+                />
+              <% else %>
+                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-xl font-semibold sm:h-20 sm:w-20 sm:text-2xl">
+                  {String.first(@user.name || @user.email || "U") |> String.upcase()}
                 </div>
+              <% end %>
+
+              <div class="min-w-0">
+                <h2 class="truncate text-xl font-semibold sm:text-2xl">
+                  {@user.name || @user.email}
+                </h2>
+                <p class="truncate text-sm text-base-content/70">{@user.email}</p>
+                <p class="mt-1 text-xs text-base-content/60">
+                  Signed in with {String.capitalize(@user.provider || "unknown")}
+                </p>
               </div>
             </div>
-          </div>
-          
-<!-- Created Rooms -->
-          <div class="glass-card cyber-hover rounded-2xl">
-            <div class="card-body p-4 sm:p-6 md:p-8">
-              <h3 class="text-lg sm:text-xl font-bold mb-4">Rooms Created</h3>
-              <%= if @user_rooms && length(@user_rooms) > 0 do %>
-                <div class="space-y-2">
-                  <%= for room <- @user_rooms do %>
-                    <div class="flex items-center justify-between p-3 glass-panel rounded-lg cyber-hover">
-                      <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold truncate">{room.name || "Unnamed Room"}</h4>
-                        <p class="text-xs text-base-content/60 truncate">
-                          Room ID: {room.room_id}
-                        </p>
-                      </div>
-                      <a href={~p"/room/#{room.room_id}"} class="btn btn-xs btn-primary">Join</a>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="text-base-content/60 text-sm">You haven't created any rooms yet.</p>
-                <a href="/create_room" class="btn btn-primary btn-sm mt-4">Create Room</a>
-              <% end %>
+          </section>
+
+          <section class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
+            <div class="mb-4 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-semibold sm:text-xl">Rooms Created</h3>
+              <span class="text-xs text-base-content/65 sm:text-sm">
+                {length(@user_rooms || [])} total
+              </span>
             </div>
-          </div>
+
+            <%= if @user_rooms && length(@user_rooms) > 0 do %>
+              <div class="space-y-2">
+                <%= for room <- @user_rooms do %>
+                  <div class="ui-card ui-card-hover flex items-center justify-between gap-3 rounded-2xl p-3 sm:p-4">
+                    <div class="min-w-0">
+                      <h4 class="truncate text-sm font-semibold sm:text-base">
+                        {room.name || "Unnamed Room"}
+                      </h4>
+                      <p class="truncate text-xs text-base-content/65">Room ID: {room.room_id}</p>
+                    </div>
+                    <a href={~p"/room/#{room.room_id}"} class="ui-btn ui-btn-primary text-sm">
+                      Open
+                    </a>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-sm text-base-content/70">You have not created any rooms yet.</p>
+              <a href="/create_room" class="ui-btn ui-btn-primary mt-4 inline-flex text-sm">
+                Create Your First Room
+              </a>
+            <% end %>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   <% else %>
-    <div class="flex-1 flex items-center justify-center p-4">
-      <div class="text-center">
-        <p class="text-base-content/60 mb-4">Please sign in to view your profile.</p>
-        <a href="/" class="btn btn-primary">Go to Home</a>
-      </div>
+    <div class="mx-auto flex min-h-screen w-full max-w-lg items-center px-4 py-8">
+      <section class="ui-card w-full rounded-3xl p-6 text-center">
+        <p class="text-base-content/70">Please sign in to view your profile.</p>
+        <a href="/" class="ui-btn ui-btn-primary mt-4 inline-flex">Go Home</a>
+      </section>
     </div>
   <% end %>
 </div>
